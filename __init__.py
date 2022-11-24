@@ -2,20 +2,8 @@
 from flask import Flask, render_template, session
 from flask_session import Session
 from datetime import timedelta
-from config import SENTRY_DSN, SENTRY_SERVER_NAME
+from config import ME
 import os
-
-# set up sentry for error handling
-if SENTRY_DSN != "":
-    import sentry_sdk
-    from sentry_sdk.integrations.flask import FlaskIntegration
-
-    sentry_sdk.init(
-        dsn=SENTRY_DSN,
-        integrations=[FlaskIntegration()],
-        traces_sample_rate=1.0,
-        server_name=SENTRY_SERVER_NAME
-    )
 
 def create_app():
     app = Flask(__name__)
@@ -23,8 +11,8 @@ def create_app():
     # set secret key
     app.config['SECRET_KEY'] = os.urandom(32)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///auth.db'
-    app.config['TOKEN_ENDPOINT'] = "https://auth.jamesg.blog/token"
-    app.config['ME'] = "https://jamesg.blog"
+    app.config['TOKEN_ENDPOINT'] = "https://tokens.indieauth.com/token"
+    app.config['ME'] = "https://"+ME
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['REMEMBER_COOKIE_SECURE'] = True
     app.config['SESSION_COOKIE_HTTPONLY'] = True
