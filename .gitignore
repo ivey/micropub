@@ -5,7 +5,7 @@ __pycache__/
 *.db
 # C extensions
 *.so
-config.py
+#config.py
 # Distribution / packaging
 .Python
 build/
@@ -128,5 +128,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-config.py
+#config.py
 flask_session/*

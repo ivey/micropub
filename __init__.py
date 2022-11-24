@@ -2,7 +2,7 @@
 from flask import Flask, render_template, session
 from flask_session import Session
 from datetime import timedelta
-from config import ME
+from config import ME, TOKEN_ENDPOINT
 import os
 
 def create_app():
@@ -11,7 +11,7 @@ def create_app():
     # set secret key
     app.config['SECRET_KEY'] = os.urandom(32)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///auth.db'
-    app.config['TOKEN_ENDPOINT'] = "https://tokens.indieauth.com/token"
+    app.config['TOKEN_ENDPOINT'] = TOKEN_ENDPOINT
     app.config['ME'] = "https://"+ME
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['REMEMBER_COOKIE_SECURE'] = True

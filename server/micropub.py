@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 
 from auth.auth_helpers import validate_scope, verify_user
 from config import (ALLOWED_EXTENSIONS, GITHUB_KEY, HOME_FOLDER,
-                    MEDIA_ENDPOINT_URL, UPLOAD_FOLDER)
+                    MEDIA_ENDPOINT_URL, UPLOAD_FOLDER, GITHUB_USER_AND_REPO, ME)
 from interactions import interactions
 
 from . import create_items
@@ -180,7 +180,7 @@ def micropub_endpoint():
         else:
             front_matter = yaml.dump(object_type)
 
-        repo = g.get_repo("capjamesg/jamesg.blog")
+        repo = g.get_repo(GITHUB_USER_AND_REPO)
 
         if object_type.get("type"):
             post_type = object_type.get("type")[0].replace("h-", "")
@@ -351,7 +351,7 @@ def media_endpoint():
             image_file_local.thumbnail((1200, 750))
             image_file_local.save(os.path.join(UPLOAD_FOLDER, filename))
 
-        repo = g.get_repo("capjamesg/jamesg.blog")
+        repo = g.get_repo(GITHUB_USER_AND_REPO)
 
         with open(os.path.join(UPLOAD_FOLDER, filename), "rb") as image_file:
             repo.create_file(
@@ -362,7 +362,7 @@ def media_endpoint():
             )
 
         resp = jsonify({"message": "Created"})
-        resp.headers["Location"] = f"https://jamesg.blog/assets/{filename}"
+        resp.headers["Location"] = f"https://{ME}/{UPLOAD_FOLDER}/{filename}"
         return resp, 201
     else:
         abort(405)

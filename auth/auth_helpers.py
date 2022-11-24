@@ -1,5 +1,6 @@
 import requests
 from flask import abort, request, session
+from config import TOKEN_ENDPOINT
 
 
 def validate_scope(scope, granted_scope_list):
@@ -28,7 +29,7 @@ def verify_user(request):
         return False, []
 
     r = requests.get(
-        "https://auth.jamesg.blog/token",
+        TOKEN_ENDPOINT,
         headers={"Authorization": "Bearer " + access_token},
     )
     if r.status_code == 200:

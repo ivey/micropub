@@ -12,8 +12,7 @@ from flask import jsonify
 from github import Github
 from werkzeug.utils import secure_filename
 
-from config import (GITHUB_KEY, GOOGLE_API_KEY, HOME_FOLDER,
-                    TWITTER_BEARER_TOKEN)
+from config import (GITHUB_KEY, HOME_FOLDER)
 
 from . import micropub_helper
 
@@ -37,7 +36,7 @@ def save_file_from_context(url):
 
             file_name = fifteen_random_letters + ext_text
 
-            repo = g.get_repo("capjamesg/jamesg.blog")
+            repo = g.get_repo(GITHUB_USER_AND_REPO)
 
             with open(HOME_FOLDER + f"{file_name}", "wb") as file:
                 file.write(photo_request.content)
@@ -88,7 +87,7 @@ def process_social(repo, front_matter, interaction, content=None):
     if target:
         try:
             reply_context_response = indieweb_utils.get_reply_context(
-                target, twitter_bearer_token=TWITTER_BEARER_TOKEN
+                target, twitter_bearer_token="TWITTER_BEARER_TOKEN"
             )
 
             json_content["context"] = reply_context_response
@@ -165,7 +164,7 @@ def process_checkin(repo, front_matter, content):
             or not json_content.get("country_name")
         ):
 
-            url_params = f"latlng={json_content.get('latitude')},{json_content.get('longitude')}&key={GOOGLE_API_KEY}"
+            url_params = f"latlng={json_content.get('latitude')},{json_content.get('longitude')}&key=GOOGLE_API_KEY"
 
             url = f"https://maps.googleapis.com/maps/api/geocode/json?{url_params}"
 
@@ -283,17 +282,6 @@ def write_to_file(
                         word, "<a href='https://{}'>{}</a>".format(word, word)
                     )
 
-            if word.startswith("#"):
-                post_contents = post_contents.replace(
-                    word,
-                    "<a href='https://jamesg.blog/tag/{}'>{}</a>".format(
-                        word[1:], word
-                    ),
-                )
-
-                with open("hashtags.txt", "a") as f:
-                    f.write(word[1:] + "\n")
-
         json_content["content"] = post_contents
 
     # only allow twitter syndication if reply is in reply to a tweet
@@ -352,13 +340,13 @@ def write_to_file(
     resp = jsonify({"message": "Created"})
     resp.headers[
         "Location"
-    ] = f"https://jamesg.blog/{folder_name.replace('_', '')}/{slug}"
+    ] = f"https://{ME}/{folder_name.replace('_', '')}/{slug}"
 
     return resp
 
 
 def undelete_post(repo, url):
-    repo = g.get_repo("capjamesg/jamesg.blog")
+    repo = g.get_repo(GITHUB_USER_AND_REPO)
 
     url = url.strip("/").split("/")[-1]
     url = "".join([char for char in url if char.isalnum() or char == "-"]).lower()
@@ -383,7 +371,7 @@ def undelete_post(repo, url):
 
 
 def delete_post(repo, url):
-    repo = g.get_repo("capjamesg/jamesg.blog")
+    repo = g.get_repo(GITHUB_USER_AND_REPO)
 
     if not url:
         return jsonify({"message": "Please provide a url."}), 400
@@ -410,7 +398,7 @@ def delete_post(repo, url):
 
 
 def update_post(repo, url, front_matter, full_contents_for_writing):
-    repo = g.get_repo("capjamesg/jamesg.blog")
+    repo = g.get_repo(GITHUB_USER_AND_REPO)
 
     original_url = url
 
